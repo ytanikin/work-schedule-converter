@@ -1,0 +1,297 @@
+###
+POST http://localhost:8080/schedule/format
+Content-Type: application/json
+
+{
+  "monday": [],
+  "tuesday": [
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "wednesday": [],
+  "thursday": [
+    {
+      "type": "open",
+      "value": 37800
+    },
+    {
+      "type": "close",
+      "value": 37800
+    }
+  ],
+  "friday": [
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "saturday": [
+    {
+      "type": "close",
+      "value": 3600
+    },
+    {
+      "type": "open",
+      "value": 3659
+    },
+    {
+      "type": "close",
+      "value": 75600
+    },
+    {
+      "type": "open",
+      "value": 79600
+    }
+  ],
+  "sunday": [
+    {
+      "type": "open",
+      "value": 43200
+    },
+    {
+      "type": "close",
+      "value": 75600
+    }
+  ]
+}
+
+### Expected Result:
+### Content-Type: application/json
+###
+### {
+###   "errors": [
+###     "Open Hour of Tuesday must have Close Hour after",
+###     "Opening time cannot be equal to closing time in Thursday with values 37800 and 37800",
+###     "Interval must be greater than 60 seconds in Thursday with values 37800 and 37800",
+###     "Interval must be greater than 60 seconds in Saturday with values 3600 and 3659",
+###     "Open Hour of Saturday must have Close Hour after"
+###   ]
+### }
+
+POST http://localhost:8080/schedule/format
+Content-Type: application/json
+
+{
+  "monday": [],
+  "tuesday": [
+    {
+      "type": "open",
+      "value": 36000
+    },
+    {
+      "type": "close",
+      "value": 64800
+    }
+  ],
+  "wednesday": [],
+  "thursday": [
+    {
+      "type": "open",
+      "value": 37800
+    },
+    {
+      "type": "close",
+      "value": 64800
+    }
+  ],
+  "friday": [
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "saturday": [
+    {
+      "type": "close",
+      "value": 3600
+    },
+    {
+      "type": "open",
+      "value": 36000
+    },
+    {
+      "type": "close",
+      "value": 75600
+    },
+    {
+      "type": "open",
+      "value": 79600
+    }
+  ],
+  "sunday": [
+    {
+      "type": "open",
+      "value": 43200
+    },
+    {
+      "type": "close",
+      "value": 3600
+    },
+    {
+      "type": "close",
+      "value": 75600
+    }
+  ]
+}
+
+### Expected Result:
+### Content-Type: text/plain
+###
+### Monday: Closed
+### Tuesday: 10 AM - 6 PM
+### Wednesday: Closed
+### Thursday: 10:30 AM - 6 PM
+### Friday: 10 AM - 1 AM
+### Saturday: 10 AM - 9 PM, 10:06 PM - 1 AM
+### Sunday: 12 PM - 9 PM
+
+###
+POST http://localhost:8080/schedule/format
+Content-Type: application/json
+
+{
+  "monday": [],
+  "tuesday": [
+    {
+      "type": "open",
+      "value": 36000
+    },
+    {
+      "type": "close",
+      "value": 64800
+    }
+  ],
+  "wednesday": [],
+  "thursday": [
+    {
+      "type": "open",
+      "value": 37800
+    },
+    {
+      "type": "close",
+      "value": 64800
+    }
+  ],
+  "friday": [
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "saturday": [
+    {
+      "type": "close",
+      "value": 1
+    },
+    {
+      "type": "open",
+      "value": 36000
+    },
+    {
+      "type": "close",
+      "value": 75600
+    },
+    {
+      "type": "open",
+      "value": 79600
+    }
+  ],
+  "sunday": [
+    {
+      "type": "close",
+      "value": 50
+    },
+    {
+      "type": "open",
+      "value": 43200
+    },
+    {
+      "type": "close",
+      "value": 75600
+    }
+  ]
+}
+
+### Expected Result:
+### Content-Type: text/plain
+###
+###Monday: Closed
+###Tuesday: 10 AM - 6 PM
+###Wednesday: Closed
+###Thursday: 10:30 AM - 6 PM
+###Friday: 10 AM - 11:59 PM
+###Saturday: 10 AM - 9 PM, 10:06 PM - 11:59 PM
+###Sunday: 12 PM - 9 PM
+
+###
+POST http://localhost:8080/schedule/format
+Content-Type: application/json
+
+{
+  "monday": [],
+  "tuesday": [
+    {
+      "type": "open",
+      "value": 360001
+    },
+    {
+      "type": "close",
+      "value": 642800
+    }
+  ],
+  "wednesday": [],
+  "thursday": [
+    {
+      "type": "forever",
+      "value": 37800
+    },
+    {
+      "type": "never",
+      "value": 64800
+    }
+  ],
+  "friday": [
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "saturday": [
+    {
+      "type": "close",
+      "value": 3600
+    },
+    {
+      "type": "open",
+      "value": 36000
+    }
+  ],
+  "sunday": [
+    {
+      "type": "close",
+      "value": 3600
+    },
+    {
+      "type": "close",
+      "value": 75600
+    },
+    {
+      "type": "open",
+      "value": 43200
+    }
+  ]
+}
+
+### Expected Result:
+### Content-Type: application/json
+###
+### {
+###   "errors": [
+###     "thursday[1].type = never, The type must be open or close",
+###     "thursday[0].type = forever, The type must be open or close",
+###     "tuesday[1].value = 642800, The value must be between 0 and 86399",
+###     "tuesday[0].value = 360001, The value must be between 0 and 86399"
+###   ]
+### }
