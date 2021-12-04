@@ -17,9 +17,9 @@ import org.junit.jupiter.params.provider.ArgumentsSource
 import java.util.stream.Stream
 
 
-internal class RequestValidatorTest {
+internal class WeekRequestValidatorTest {
 
-    private val validator = RequestValidator()
+    private val validator = WeekRequestValidator()
 
     @Test
     fun successValidation() {

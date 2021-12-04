@@ -30,14 +30,12 @@ import java.util.*
  */
 
 @Component
-class RequestValidator {
+class WeekRequestValidator {
 
     fun validate(request: WeekScheduleRequest) {
         sortDayValue(request)
         val errors: MutableList<String> = verify(request)
-        if (errors.isNotEmpty()) {
-            throw BusinessException(errors.toList())
-        }
+        if (errors.isNotEmpty()) throw BusinessException(errors.toList())
     }
 
     private fun verify(weekSchedule: WeekScheduleRequest): MutableList<String> {
@@ -143,7 +141,6 @@ class RequestValidator {
 
     private fun isFirstTypeClose(currentDay: MutableList<OpenHoursRequest>): Boolean = currentDay.first().isCloseType
 
-    private val DayOfWeek.fullDisplayName: String
-        get() = this.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
+    private val DayOfWeek.fullDisplayName: String get() = this.getDisplayName(TextStyle.FULL, Locale.ENGLISH)
 }
 

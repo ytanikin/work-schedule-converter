@@ -5,9 +5,9 @@ import com.yeldos.scheduleconverter.infrastructure.controller.request.WeekSchedu
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-internal class RequestMapperTest {
+internal class WeekRequestMapperTest {
 
-    private val mapper = RequestMapper()
+    private val mapper = WeekRequestMapper()
 
     @Test
     fun map() {

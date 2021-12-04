@@ -16,11 +16,10 @@ import java.time.DayOfWeek
  * - If there is no [OpenHoursRequest] for a day, initializes a [Day] object with an empty list of [Shift]
  */
 @Component
-class RequestMapper {
+class WeekRequestMapper {
+
     fun map(request: WeekScheduleRequest): Week {
-        val weekDays: Map<DayOfWeek, Day> = DayOfWeek.values().associateBy({ it }, {
-            Day(it, collectShifts(it, request))
-        })
+        val weekDays: Map<DayOfWeek, Day> = DayOfWeek.values().associateWith { Day(it, collectShifts(it, request)) }
         return Week.from(weekDays)
     }
 
@@ -30,23 +29,17 @@ class RequestMapper {
     }
 
     private fun getOpenCloseHours(weekRequest: WeekScheduleRequest, weekDay: DayOfWeek, day: List<OpenHoursRequest>): List<Shift> {
-        val shifts: MutableList<Shift> = getDayShifts(day)
+        val shifts: MutableList<Shift> = getDayShifts(day).toMutableList()
         if (isLastHourOpen(day)) {
             shifts += withCloseHourFromNextDay(weekRequest, weekDay, day)
         }
         return shifts.toList()
     }
 
-    private fun getDayShifts(day: List<OpenHoursRequest>): MutableList<Shift> {
-        val shifts: MutableList<Shift> = mutableListOf()
-        var hourIndex = if (day.first().isCloseType) 1 else 0
-        while (hourIndex + 1 < day.size) {
-            val openHour: OpenHoursRequest = day[hourIndex]
-            val closeHour: OpenHoursRequest = day[hourIndex + 1]
-            shifts += Shift(openHour.value!!, closeHour.value!!)
-            hourIndex += 2
-        }
-        return shifts
+    private fun getDayShifts(day: List<OpenHoursRequest>): List<Shift> {
+        val startIndex = if (day.first().isCloseType) 1 else 0
+        if (day.size <= startIndex + 1) return emptyList()
+        return (startIndex until day.size step 2).map { Shift(day[it].value!!, day[it + 1].value!!) }
     }
 
     private fun withCloseHourFromNextDay(weekRequest: WeekScheduleRequest, weekDay: DayOfWeek, day: List<OpenHoursRequest>): Shift {
