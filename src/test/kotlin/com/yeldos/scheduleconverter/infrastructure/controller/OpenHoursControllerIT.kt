@@ -131,18 +131,19 @@ class OpenHoursControllerIT {
                 |Thursday: 8 AM - 6 PM
                 |Friday: 8 AM - 6 PM
                 |Saturday: 8 AM - 6 PM
-                |Sunday: 8 AM - 6 PM""".trimMargin().replace("\n", System.lineSeparator())
+                |Sunday: 8 AM - 6 PM""".trimMargin().replaceLineSeparator()
         }
 
         private val expectedScheduleText by lazy {
              """ |Monday: Closed
                  |Tuesday: Closed
-                 |Wednesday: 8 AM - 6 PM
+                 |Wednesday: 8 AM - 10 AM, 12 PM - 6 PM
                  |Thursday: 8 AM - 6 PM
                  |Friday: 8 AM - 6 PM
                  |Saturday: 8 AM - 6 PM
-                 |Sunday: 8 AM - 6 PM""".trimMargin().replace("\n", System.lineSeparator())
+                 |Sunday: 8 AM - 6 PM""".trimMargin().replaceLineSeparator()
         }
+        private fun String.replaceLineSeparator() = this.replace("\n", System.lineSeparator())
 
     }
 

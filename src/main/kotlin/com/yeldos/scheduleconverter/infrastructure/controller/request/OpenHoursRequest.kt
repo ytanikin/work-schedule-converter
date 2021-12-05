@@ -13,10 +13,13 @@ private const val OPEN = "open"
 private const val CLOSE = "close"
 
 data class OpenHoursRequest(
-        @field:[NotNull Pattern(regexp = "$OPEN|$CLOSE", message = ERROR_MESSAGE_OPEN_OR_CLOSE)]
+        @field:[NotNull
+        Pattern(regexp = "$OPEN|$CLOSE", message = ERROR_MESSAGE_OPEN_OR_CLOSE)]
         val type: String?,
 
-        @field:[NotNull Max(value = MAX_SECONDS_VALUE.toLong(), message = ERROR_THE_VALUE_RANGE) Min(value = 0, message = ERROR_THE_VALUE_RANGE)]
+        @field:[NotNull
+        Max(value = MAX_SECONDS_VALUE.toLong(), message = ERROR_THE_VALUE_RANGE)
+        Min(value = 0, message = ERROR_THE_VALUE_RANGE)]
         val value: Int?
 ) {
     @get:JsonIgnore

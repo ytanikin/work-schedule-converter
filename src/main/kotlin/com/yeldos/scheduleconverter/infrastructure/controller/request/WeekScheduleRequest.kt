@@ -7,13 +7,13 @@ import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
 data class WeekScheduleRequest(
-        @field:[Valid NotNull] val monday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val tuesday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val wednesday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val thursday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val friday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val saturday: MutableList<OpenHoursRequest?>?,
-        @field:[Valid NotNull] val sunday: MutableList<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val monday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val tuesday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val wednesday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val thursday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val friday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val saturday: List<OpenHoursRequest?>?,
+        @field:[Valid NotNull] val sunday: List<OpenHoursRequest?>?,
 ) {
 
     @get:JsonIgnore
@@ -41,6 +41,6 @@ data class WeekScheduleRequest(
      */
     fun previousDay(current: DayOfWeek): List<OpenHoursRequest> = days[(current.minus(1))]!!
 
-    private fun toNonNull(nullableReq: MutableList<OpenHoursRequest?>?) = nullableReq!!.map { it!! }.toMutableList()
+    private fun toNonNull(nullableReq: List<OpenHoursRequest?>?) = nullableReq!!.map { it!! }.toMutableList()
 
 }

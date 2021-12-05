@@ -45,7 +45,7 @@ object WeekScheduleRequestFixture {
     fun weekScheduleRequest(
         mondayHours: MutableList<OpenHoursRequest?>? = mutableListOf(),
         tuesdayHours: MutableList<OpenHoursRequest?>? = mutableListOf(),
-        wednesdayHours: MutableList<OpenHoursRequest?>? = mutableListOf(open8AM, close6PM),
+        wednesdayHours: MutableList<OpenHoursRequest?>? = mutableListOf(open8AM, close6PM, closeAt(10 * 60 * 60), openAt(12 * 60 * 60)),
         thursdayHours: MutableList<OpenHoursRequest?>? = mutableListOf(open8AM, close6PM),
         fridayHours: MutableList<OpenHoursRequest?>? = mutableListOf(open8AM, close6PM),
         saturdayHours: MutableList<OpenHoursRequest?>? = mutableListOf(open8AM, close6PM),
