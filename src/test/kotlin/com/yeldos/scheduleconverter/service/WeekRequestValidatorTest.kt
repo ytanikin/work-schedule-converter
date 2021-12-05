@@ -26,9 +26,9 @@ internal class WeekRequestValidatorTest {
         validator.validate(weekScheduleRequest)
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} => {1}")
     @ArgumentsSource(WeekScheduleArgumentsProvider::class)
-    fun invalidRequestTest(arguments: ParametrizedArguments) {
+    fun invalidRequestTest(arguments: ParametrizedArguments, description: String) {
         val exception = assertThrows(BusinessException::class.java) {
             validator.validate(arguments.weekScheduleRequest)
         }
@@ -39,28 +39,30 @@ internal class WeekRequestValidatorTest {
         override fun provideArguments(context: ExtensionContext?): Stream<out Arguments?>? {
             val equalValues = Arguments.of(ParametrizedArguments(
                 openHours = mutableListOf(OpenHoursRequestFixture.close6PM, OpenHoursRequestFixture.close6PM),
-                messages = listOf("Monday has overlapping hours, values: 64800, 64800", "Close Hour of Monday must have Open Hour before")
-            ))
+                messages = listOf("Monday has overlapping hours, values: 64800, 64800", "Close Hour of Monday must have Open Hour before")),
+            "Monday has overlapping hours, values")
             val openHasNoPair = Arguments.of(ParametrizedArguments(
                 openHours = mutableListOf(OpenHoursRequestFixture.close6PM),
-                messages = listOf("Close Hour of Monday must have Open Hour before")
-            ))
+                messages = listOf("Close Hour of Monday must have Open Hour before")),
+            "Close Hour of Monday must have Open Hour) before")
             val closeHasNoPair = Arguments.of(ParametrizedArguments(
                 openHours = mutableListOf(OpenHoursRequestFixture.open9AM),
-                messages = listOf("Open Hour of Monday must have Close Hour after")
-            ))
+                messages = listOf("Open Hour of Monday must have Close Hour after")),
+            "Open Hour of Monday must have Close Hour after")
             val typesAreMixedUp = Arguments.of(ParametrizedArguments(
                 openHours = mutableListOf(OpenHoursRequestFixture.open6PM, OpenHoursRequestFixture.close11AM),
-                messages = listOf("Close Hour of Monday must have Open Hour before", "Open Hour of Monday must have Close Hour after")
-            ))
+                messages = listOf("Close Hour of Monday must have Open Hour before", "Open Hour of Monday must have Close Hour after")),
+            "Close Hour of Monday must have Open Hour before")
             val smallInterval = Arguments.of(ParametrizedArguments(
                 openHours = mutableListOf(OpenHoursRequestFixture.openAt(3600), OpenHoursRequestFixture.closeAt(3650)),
-                messages = listOf("Interval must be greater than 60 seconds in Monday with values 3600 and 3650")
-            ))
+                messages = listOf("Interval must be greater than 60 seconds in Monday with values 3600 and 3650")),
+            "Interval must be greater than 60 seconds in Monday with values")
             val closeOfNextDayGreaterThanOpen = Arguments.of(ParametrizedArguments(
                 weekScheduleRequest = closeOfNextDayGreaterThanOpen,
-                messages = listOf("Open hour of Tuesday is less than close hour of next day, this can mislead the user, please check your schedule", "Interval must be greater than 60 seconds in Tuesday with values 1800 and 1840")
-            ))
+                messages = listOf(
+                    "Open hour of Tuesday is less than close hour of next day, this can mislead the user, please check your schedule",
+                    "Interval must be greater than 60 seconds in Tuesday with values 1800 and 1840")),
+            "Open hour of Tuesday is less than close hour of next day")
             return Stream.of(equalValues, openHasNoPair, closeHasNoPair, typesAreMixedUp, smallInterval, closeOfNextDayGreaterThanOpen)
         }
     }
