@@ -32,6 +32,7 @@ data class Shift(private val openingSeconds: Int, private val closingSeconds: In
     val shift: String by lazy { "$openingTime - $closingTime" }
     private val openingTime by lazy { convertSecondsToHour(openingSeconds, false) }
     private val closingTime by lazy { convertSecondsToHour(closingSeconds, true) }
+    private val dateFormat: DateFormat = SimpleDateFormat("h:mm aa")
 
     private fun convertSecondsToHour(seconds: Int, closeTime: Boolean): String {
         if (closeTime && isClosingMidnight(closingSeconds)) {
@@ -43,11 +44,10 @@ data class Shift(private val openingSeconds: Int, private val closingSeconds: In
     private fun convertSecondsToHour(seconds: Int): String {
         val instantTime = LocalDate.EPOCH.atTime(LocalTime.ofSecondOfDay(seconds.toLong())).atZone(ZoneId.systemDefault()).toInstant()
         val date = Date.from(instantTime)
-        return DATE_FORMAT.format(date).replace(":00", "")
+        return dateFormat.format(date).replace(":00", "")
     }
 
     companion object {
-        private val DATE_FORMAT: DateFormat = SimpleDateFormat("h:mm aa")
         const val SIXTY_SECONDS = 60
         const val MAX_SECONDS_VALUE = 24 * SIXTY_SECONDS * SIXTY_SECONDS - 1
         private const val MIN_INTERVAL_SECONDS = SIXTY_SECONDS
