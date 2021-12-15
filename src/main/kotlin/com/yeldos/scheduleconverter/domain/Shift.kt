@@ -36,7 +36,7 @@ data class Shift(private val openingSeconds: Int, private val closingSeconds: In
 
     private fun convertSecondsToHour(seconds: Int, closeTime: Boolean): String {
         if (closeTime && isClosingMidnight(closingSeconds)) {
-            return convertSecondsToHour(MAX_SECONDS_VALUE)
+            return convertSecondsToHour(SECONDS_IN_DAY)
         }
         return convertSecondsToHour(seconds)
     }
@@ -49,13 +49,13 @@ data class Shift(private val openingSeconds: Int, private val closingSeconds: In
 
     companion object {
         const val SIXTY_SECONDS = 60
-        const val MAX_SECONDS_VALUE = 24 * SIXTY_SECONDS * SIXTY_SECONDS - 1
+        const val SECONDS_IN_DAY = 24 * 3600 - 1
         private const val MIN_INTERVAL_SECONDS = SIXTY_SECONDS
         private val VALIDATIONS: List<Pair<(o: Int, c: Int) -> Boolean, String>> = listOf(
             { open: Int, close: Int -> open >= 0 && close >= 0 }
                     to "Time cannot be negative",
-            { open: Int, close: Int -> close <= MAX_SECONDS_VALUE && open <= MAX_SECONDS_VALUE }
-                    to "Time must be less than $MAX_SECONDS_VALUE",
+            { open: Int, close: Int -> close <= SECONDS_IN_DAY && open <= SECONDS_IN_DAY }
+                    to "Time must be less than $SECONDS_IN_DAY",
             { open: Int, close: Int -> open != close || isClosingMidnight(close) }
                     to "Opening time cannot be equal to closing time",
             { open: Int, close: Int -> isIntervalValid(close, open) || isClosingMidnight(close) }
@@ -83,7 +83,7 @@ data class Shift(private val openingSeconds: Int, private val closingSeconds: In
             if (!isClosingMidnight(closingSeconds)) {
                 return true
             }
-            return openingSeconds <= MAX_SECONDS_VALUE - SIXTY_SECONDS
+            return openingSeconds <= SECONDS_IN_DAY - SIXTY_SECONDS
         }
 
         private fun isIntervalValid(closingSeconds: Int, openingsSeconds: Int) = (closingSeconds - openingsSeconds).absoluteValue >= MIN_INTERVAL_SECONDS

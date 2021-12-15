@@ -6,6 +6,11 @@ import java.time.DayOfWeek.*
 import javax.validation.Valid
 import javax.validation.constraints.NotNull
 
+/**
+ * WeekScheduleRequest for converting week schedule to timetable
+ *
+ * Properties are nullable to be able to gather null fields from request and send back to client with explanation
+ */
 data class WeekScheduleRequest(
         @field:[Valid NotNull] val monday: List<OpenHoursRequest?>?,
         @field:[Valid NotNull] val tuesday: List<OpenHoursRequest?>?,

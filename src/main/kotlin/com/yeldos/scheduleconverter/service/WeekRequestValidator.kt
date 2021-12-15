@@ -27,18 +27,18 @@ import java.util.*
  * For the rest of the cases refer to [Shift]
  *
  * If there are errors, a RequestException is thrown with all gathered errors.
+ * MutableList is used to keep the errors, immutable list makes harder to read the code in this case
  */
 
 @Component
 class WeekRequestValidator {
 
     fun validate(request: WeekScheduleRequest) {
-        sortDayValue(request)
-        val errors: MutableList<String> = verify(request)
+        val errors: List<String> = verify(request)
         if (errors.isNotEmpty()) throw BusinessException(errors.toList())
     }
 
-    private fun verify(weekSchedule: WeekScheduleRequest): MutableList<String> {
+    private fun verify(weekSchedule: WeekScheduleRequest): List<String> {
         val errors: MutableList<String> = mutableListOf()
         for (dayMapEntry in weekSchedule.days) {
             val dayHours = dayMapEntry.value
@@ -47,6 +47,30 @@ class WeekRequestValidator {
             verifyHoursAcrossDays(weekSchedule, errors, dayOfWeek)
         }
         return errors
+    }
+
+    private fun verifyOverlappingHours(dayHours: List<OpenHoursRequest>, errors: MutableList<String>, dayOfWeek: DayOfWeek) {
+        for (i in 0 until dayHours.size - 1) {
+            val current = dayHours[i]
+            val next = dayHours[i + 1]
+            verifyIntervalAndOverlaps(current, next, errors, dayOfWeek)
+        }
+    }
+
+    /**
+     * - verifies if values within a day are not equal to each other.
+     * - verifies if the interval of opening and closing hours is bigger than 60 seconds
+     * - verifies if the open hour is before the close hour
+     */
+    private fun verifyIntervalAndOverlaps(current: OpenHoursRequest, next: OpenHoursRequest, errors: MutableList<String>, dayOfWeek: DayOfWeek) {
+        if (current.type == next.type) {
+            errors += "${dayOfWeek.fullDisplayName} has overlapping hours, values: ${current.value}, ${next.value}"
+            return
+        }
+        val validations = Shift.validate(current.value!!, next.value!!, false).map {
+            "$it in ${dayOfWeek.fullDisplayName} with values ${current.value} and ${next.value}"
+        }
+        errors += validations
     }
 
     /**
@@ -64,6 +88,19 @@ class WeekRequestValidator {
         }
         verifyCloseAfterOpenHours(errors, weekSchedule, dayOfWeek)
     }
+
+    /**
+     * Verifies if a day's first hour is close has a pair of open hour in previous day
+     */
+    private fun verifyOpenBeforeCloseHours(errors: MutableList<String>, weekSchedule: WeekScheduleRequest, dayOfWeek: DayOfWeek) {
+        val prevDay = weekSchedule.previousDay(dayOfWeek)
+        val currentDay = weekSchedule.days[dayOfWeek]!!
+        if (isFirstTypeClose(currentDay) && (prevDay.isEmpty() || !isLastHourOpen(prevDay))) {
+            errors += "Close Hour of ${dayOfWeek.fullDisplayName} must have Open Hour before"
+        }
+    }
+
+    private fun isLastHourClose(currentDay: List<OpenHoursRequest>): Boolean = currentDay.last().isCloseType
 
     /**
      * Verifies if a day's last hour is  open has a pair of close hour in next day
@@ -97,45 +134,6 @@ class WeekRequestValidator {
         }
         errors += validations
     }
-
-    /**
-     * Verifies if a day's first hour is close has a pair of open hour in previous day
-     */
-    private fun verifyOpenBeforeCloseHours(errors: MutableList<String>, weekSchedule: WeekScheduleRequest, dayOfWeek: DayOfWeek) {
-        val prevDay = weekSchedule.previousDay(dayOfWeek)
-        val currentDay = weekSchedule.days[dayOfWeek]!!
-        if (isFirstTypeClose(currentDay) && (prevDay.isEmpty() || !isLastHourOpen(prevDay))) {
-            errors += "Close Hour of ${dayOfWeek.fullDisplayName} must have Open Hour before"
-        }
-    }
-
-    private fun verifyOverlappingHours(dayHours: List<OpenHoursRequest>, errors: MutableList<String>, dayOfWeek: DayOfWeek) {
-        for (i in 0 until dayHours.size - 1) {
-            val current = dayHours[i]
-            val next = dayHours[i + 1]
-            verifyIntervalAndOverlaps(current, next, errors, dayOfWeek)
-        }
-    }
-
-    /**
-     * - verifies if values within a day are not equal to each other.
-     * - verifies if the interval of opening and closing hours is bigger than 60 seconds
-     * - verifies if the open hour is before the close hour
-     */
-    private fun verifyIntervalAndOverlaps(current: OpenHoursRequest, next: OpenHoursRequest, errors: MutableList<String>, dayOfWeek: DayOfWeek) {
-        if (current.type == next.type) {
-            errors += "${dayOfWeek.fullDisplayName} has overlapping hours, values: ${current.value}, ${next.value}"
-            return
-        }
-        val validations = Shift.validate(current.value!!, next.value!!, false).map {
-            "$it in ${dayOfWeek.fullDisplayName} with values ${current.value} and ${next.value}"
-        }
-        errors += validations
-    }
-
-    private fun sortDayValue(request: WeekScheduleRequest) = request.days.values.forEach { it.sortBy(OpenHoursRequest::value) }
-
-    private fun isLastHourClose(currentDay: List<OpenHoursRequest>): Boolean = currentDay.last().isCloseType
 
     private fun isLastHourOpen(prevDay: List<OpenHoursRequest>): Boolean = prevDay.last().isOpenType
 

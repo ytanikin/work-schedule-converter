@@ -1,7 +1,7 @@
 package com.yeldos.scheduleconverter.infrastructure.controller
 
-import com.yeldos.scheduleconverter.infrastructure.controller.request.WeekScheduleRequest
 import com.yeldos.scheduleconverter.domain.exception.BusinessException
+import com.yeldos.scheduleconverter.infrastructure.controller.request.WeekScheduleRequest
 import com.yeldos.scheduleconverter.infrastructure.controller.response.ErrorResponse
 import com.yeldos.scheduleconverter.service.ScheduleConverterService
 import org.springframework.http.HttpStatus

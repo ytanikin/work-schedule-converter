@@ -278,7 +278,7 @@ Consider the input values has only one shift in the entire week in the following
 
 
 ___
-# Part 2
+
 ### The input structure improvements.
 #### Pros of current implementation
 * Simple to understand.
@@ -288,6 +288,65 @@ ___
 
 #### Cons
 * Difficult to extend
+<details>
+  <summary>Click to expand!</summary>
+
+```{
+      "monday" : [],
+      "tuesday" : [
+        {
+          "type" : "open",
+          "value" : 36000
+        },
+        {
+          "type" : "close",
+          "value" : 64800
+        }
+      ],
+      "wednesday" : [],
+      "thursday" : [
+        {
+          "type" : "open",
+          "value" : 37800
+        },
+        {
+          "type" : "close",
+          "value" : 64800
+        }
+      ],
+      "friday" : [
+        {
+          "type" : "open",
+          "value" : 36000
+        }
+      ],
+      "saturday" : [
+        {
+          "type" : "close",
+          "value" : 3600
+        },
+        {
+          "type" : "open",
+          "value" : 36000
+        }
+      ],
+      "sunday" : [
+        {
+          "type" : "close",
+          "value" : 3600
+        },
+        {
+          "type" : "open",
+          "value" : 43200
+    },
+    {
+      "type" : "close",
+      "value" : 75600
+    }
+    ]
+   }
+```
+</details>
 
 Therefore, there is only improvement in the input structure I can suggest.
 * First, instead of using an `array` of `times` we can use the object with a key of
@@ -324,32 +383,3 @@ Therefore, there is only improvement in the input structure I can suggest.
 ```
 
 ___
-# Further small improvements out of scope
-
-### Functional
-
-- [ ] Add localization support, for name of days, day periods(AM/PM), `Closed` mark, etc.
-- [ ] Add support of `24 hours` format, e.g. `09:00 - 17:00` for some regions.
-- [ ] If the opening and closing times are in the same half-day, display only one
-  mark of the half day, e.g. `6 - 11 AM` instead of `6 AM - 11 AM`.
-- [ ] If a few days in a row have the same opening and closing times or days are closed, 
-shorten to one line, e.g. `Mon - Fri: 6 AM - 11 AM`, `San - Sun: Closed`, `Weekends: Closed`
-- [ ] Identify if the day `round the clock` and add it to the result.
-- [ ] Display `midnight` or `noon` instead of `12 AM`.
-- [ ] Add support for American weekdays, that is, `Sunday` is the first day of the week.
-- [ ] Add support for different time formats, like `HH:mm` and `h:mm`.
-- [ ] Add exception handler for the rest of the exceptions.
-- [ ] Consider `Shift` domain entity being aware of cross-day shifts? by passing to the constructor
-  the `nextDayCloseTime` or `crossDay` boolean? This will bring `Shift` to have
-  more control and validation over its data as a benefit.
-
-### Non-Functional
-
-- [ ] Consider creating abstract class `Day` and different implementation for each
-  `week day`, `Sealed` feature can come in handy. The number of days in a week ( most probably :) )
-  will remain the same forever, so this is not about `Open Closed Principle`, but about `Strong Type Safety`
-  so that we can be sure we never mix up the day with the wrong day, when we create a `Week` object.
-Currently, it is being validated in the constructor.
-- [ ] Consider adding index.html to be able to test the endpoint of the app from a browser.
-- [ ] Investigate the possibility of using `Kotlin Type Safe Builder` with immutable `data` classes.
-- [ ] Consider adapting `Specification Pattern` to avoid exposing `Shift.validate` method.
